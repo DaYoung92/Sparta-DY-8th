@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<!-- HTML5 사용한다는 뜻의 선언> -->
+<!-- ctrl + /  주석 사용 -->
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스파르타코딩클럽</title>
+
+    <style>
+        .test1 {
+            color : red;
+
+        }
+
+        #id_test_1 {
+            color : blue;
+        }
+
+        .test2,test3 {
+            background-color : yellow;
+        }
+
+        .test2 >div{
+            /*class가 test2 바로 아래자식인 div 애들 모두에게 영향을 줌 = 1차 자식에게만 영향을 줌 */
+            background-color : green;
+
+        }
+
+        .test2 div {
+            /* class가 test2인 애들 안의 모든 div 태그에 영향을 줌 */
+            background-color : orange;
+
+        }
+
+        #id_test_2 > div input[type = password]{
+            /* id가 id_test_2 바로 아래자식인 div 태그 안에서 type이 password인 input 태그 */
+            background-color : purple;
+
+        }
+
+        .test1.test2{
+            /* test1, test2 클래스에 모두 속해 있는 태그에게만 한정적으로 적용 */
+            background-color : gray;
+
+        }
+    </style>
+</head>
+
+<!-- 선택자(selector) -->
+<!-- 태그에 이름주기 (class / id) -->
+<!-- id는 HTML에서 unique한 이름을 줄 떄 쓴다 (즉 '이름' 그 자체) -->
+<!-- class는 집단이름이다. 일종의 태그. css에서 특정 부분들을 한방에 수정할 때 사용된다 -->
+
+<body>
+    <h1>로그인 페이지</h1>
+
+    <div class = "test1 test2 test3" id = "id_test_1">
+        
+        <div>
+            <label>ID:</label>
+            <input type = "text" class = "test1" />
+        </div>
+    
+        <div>
+            <label>PW:</label>
+            <input type = "password" />
+        </div>
+
+    </div>
+    
+    <button class ="test3">로그인하기</button>
+
+    <h1>로그인 페이지</h1>
+
+    <div>
+        
+        
+            <p>ID:<input type = "text" /></p>
+            
+        
+    
+        
+            <p>PW:<input type = "password" /></p>
+        
+
+    </div>
+    
+    <button>로그인하기</button>
+   
+
+</body>
+
+</html>

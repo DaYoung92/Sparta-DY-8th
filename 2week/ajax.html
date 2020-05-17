@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- jquery 참조 명령. ajax를 쓰려면 꼭 필요 -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <script>
+
+        function test() {
+            $.ajax({
+                // type :  API 요청 종류 - method라고도 한다. get(데이터 조회), post(데이터 생성), patch(데이터 일부 수정), put(데이터 전체 수정), delete(데이터 삭제)
+                // 해당 method는 반드시 지킬 필요가 없다. 에러가 안남. 여기서는 조회는 get, 생성수정삭제는 post로 통일
+
+                // 양식: url, header, body(data)
+                // get method는 url이랑 header만 쓴다
+                // post method : 전체다
+
+                // client(browser)가 서버에게 데이터를 줄 떄 
+                // get은 url 칸에 데이터를 담아서 보냄 : naver.com?username=눈누난냐&password=크집사
+                //  post는 body(data)에 데이터를 담아서 보냄 : url에 표시되지 않음. body: {username: 눈누난냐, password: 크집사}
+
+                type: "GET", // GET 방식으로 요청한다.
+                url: "http://openapi.seoul.go.kr:8088/6d4d776b466c656533356a4b4b5872/json/RealtimeCityAir/1/99",
+                data: {}, // 요청하면서 함께 줄 데이터 (GET 요청시엔 비워두세요)
+                success: function (response) { // 서버에서 준 결과를 response라는 변수에 담음
+                    let data = response["RealtimeCityAir"];
+                    let result = data["row"];
+                    // console.log(result);
+                    $('#data-box').empty();
+                
+
+                    for (let i = 0; i < result.length; i++) {
+                        let gu = result[i]["MSRSTE_NM"];
+                        let mise = result[i]["IDEX_MVL"];
+
+                        // console.log(gu, mise);
+                        let html = `
+                            <li>${gu} : ${mise}</li> 
+                        `;
+
+                        $('#data-box').append(html);
+                    }// 서버에서 준 결과를 이용해서 나머지 코드를 작성
+                },
+                error: function (error) {//서버에서 문제가 생겨서 정상값이 응답오지 않을 떄
+                    console.log(error);
+                }
+
+                // Status Code: 200 OK
+                // 201 생성 ok
+                // 400 잘못된 요청
+                // 401 권한 없음 (로그인 안한 사람)
+                // 403 forbidden 접근 금지 (등급 낮은 회원 등 권한이 낮음)
+                // 404 해당 창구가 없음
+                // 500 서버 내부 에러
+            });
+        };
+
+
+    </script>
+</head>
+
+<body>
+    <button onclick="test()">데이터 불러오기</button>
+
+    <ul id="data-box">
+
+    </ul>
+</body>
+
+</html>
