@@ -1,0 +1,22 @@
+.wholepage {
+    max-width: 480px;
+    margin: 10px auto;
+    /* top bottom 10px right left 자동으로 화면 중앙에 몰리게 수치 조정해줌 */
+
+    font-family: 'Stylish', sans-serif;
+    word-break:break-all;
+}
+
+.title {
+    font-size: 36px;
+    margin-top: 20px;
+    margin-right: 10px;
+}
+
+.btn-primary {
+    margin: 0px 40%;
+}
+
+.exchangetext {
+    color: blue;
+}
