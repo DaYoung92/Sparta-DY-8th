@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Document</title>
+
+    <link rel="stylesheet" href="{{url_for('static', filename='css/index.css')}}"/>
+    <script src="{{url_for('static', filename='js/index.js')}}" ></script>
+</head>
+<body>
+    <h1>서버'를 만들었다!</h1>
+    <img src="{{ url_for('static', filename='rome.jpg') }}"/> 
+    
+    <!-- 진자= (중괄호 2개) 이 안에 파이썬 코드를 넣을 수 있음 . 이걸 통해서 이미지를 불러오는 방법임 -->
+    <!-- <link href="(중괄호 2개 열기)url_for('static', filename='css/index.css')(중괄호2개 닫기)" />이런 식으로 다른 폴더의 파일을 끌어올 수도 있음 -->
+    <!-- 파일이 없거나 경로가 잘못되면 404 에러가 뜸 -->
+
+    <button onclick="postData()">데이터 요청</button>
+</body>
+</html>

@@ -1,0 +1,495 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>모여봐요 동물의 숲 | 주민 거래소</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.turnips.trade/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.turnips.trade/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.turnips.trade/favicon-16x16.png">
+  <meta property="og:title" content="모여봐요 동물의 숲 | 주민 거래소">
+  <meta property="og:description" content="내가 원하는 주민으로만 섬을 꽉 채우는 그날까지-">
+  <meta property="og:url" content="https://turnips.trade/">
+  <meta property="og:image" content="https://cdn.turnips.trade/daisymae.png">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+  <!-- css 파일 넣기 -->
+  <link rel="stylesheet" type="text/css" href="./static/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-KG81BCCHRP"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-KG81BCCHRP");
+  </script>
+  <style type="text/css">
+    /* Chart.js */
+    @keyframes chartjs-render-animation {
+      from {
+        opacity: .99
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .chartjs-render-monitor {
+      animation: chartjs-render-animation 1ms
+    }
+
+    .chartjs-size-monitor,
+    .chartjs-size-monitor-expand,
+    .chartjs-size-monitor-shrink {
+      position: absolute;
+      direction: ltr;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+      pointer-events: none;
+      visibility: hidden;
+      z-index: -1
+    }
+
+    .chartjs-size-monitor-expand>div {
+      position: absolute;
+      width: 1000000px;
+      height: 1000000px;
+      left: 0;
+      top: 0
+    }
+
+    .chartjs-size-monitor-shrink>div {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      left: 0;
+      top: 0
+    }
+  </style>
+</head>
+
+<body class="bg-light">
+  <div class="container">
+    <div class="col my-3 p-3 bg-white rounded shadow-sm">
+      <div class="row">
+        <div class="col-md-5 text-center">
+          <img src="https://cdn.turnips.trade/daisymae.png" alt="title-img" class="img-fluid">
+        </div>
+        <div class="col-md-7 text-center">
+          <h1 class="display-4">
+            모여봐요 동물의 숲 <br />주민 거래소
+          </h1>
+          <p class="lead">
+            내가 원하는 주민으로 섬을 채우는 그날까지
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="my-3 p-3 bg-white rounded shadow-sm" id="sell-table">
+      <h3 class="border-bottom border-gray pb-2 mb-0">
+        판매해요
+      </h3>
+
+      <table class="table table-hover table-borderless table-striped">
+        <thead>
+          <tr>
+            <th scope="col-2">#</th>
+            <th scope="col-2">판매주민</th>
+            <th scope="col-2">가격</th>
+            <th scope="col-2">남은 시간</th>
+            <th scope="col-2">연락처</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sellModal" id="sell-btn">
+        판매글 올리기
+      </button>
+    </div>
+
+    <div class="my-3 p-3 bg-white rounded shadow-sm" id="buy-table">
+      <h3 class="border-bottom border-gray pb-2 mb-0">
+        구매해요
+      </h3>
+      <table class="table table-hover table-borderless table-striped">
+        <thead>
+          <tr>
+            <th scope="col-2">#</th>
+            <th scope="col-2">희망주민</th>
+            <th scope="col-2">가격</th>
+            <th scope="col-2">남은 시간</th>
+            <th scope="col-2">연락처</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#buyModal" id="buy-btn">
+        구매글 올리기
+      </button>
+    </div>
+
+
+    <!-- Buy Modal -->
+    <div class="modal fade" id="sellModal" data-backdrop="static" tabindex="-1" role="dialog"
+      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">
+              판매글 올리기
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="sell-form">
+              <div class="form-group row">
+                <label for="turnipPrice" class="col-sm-4 col-form-label">판매주민</label>
+                <div class="col-sm-5">
+                  <img src="https://cdn.turnips.trade/favicon-32x32.png" />
+                  <span>주민을 검색하세요</span>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="turnipPrice" class="col-sm-4 col-form-label"></label>
+                <div class="col-sm-5">
+                  <input type="text" class="form-control" id="turnipPrice" placeholder="주민 이름" name="price" required="">
+                </div>
+                <div><button class="btn btn-outline-primary">검색하기</button></div>
+              </div>
+              <div class="form-group row">
+                <label for="dodoCode" class="col-sm-4 col-form-label">가격</label>
+                <div class="col-sm-5">
+                  <input type="number" class="form-control" id="turnipPrice" placeholder="예시 : 1" name="price" min="1"
+                    max="9999" step="1" required="">
+                </div>
+                <div>
+                  <select class="custom-select" id="price_type" name="price_type">
+                    <option selected="" value="마일">마일</option>
+                    <option value="덩">덩</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="nothing" class="col-sm-4 col-form-label"></label>
+                <div class="col-sm-5">
+                  <p>1마일 : 마일 여행권 1장<br />1덩 : 99,000벨</p>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="turnipPrice" class="col-sm-4 col-form-label">연락처</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" id="address" placeholder="원하시는 연락처를 입력해주세요" name="address"
+                    required="">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="turnipPrice" class="col-sm-4 col-form-label">비밀번호</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" id="pword" placeholder="글 삭제 시 필요합니다" name="pword"
+                    required="">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="note" class="col-sm-4 col-form-label">메모</label>
+                <div class="col-sm-8">
+                  <textarea type="text" class="form-control" id="note" aria-describedby="note"
+                    placeholder="예시 : 가격 협상 가능해요!" name="note" maxlength="200" value=""></textarea>
+                </div>
+              </div>
+              <!-- <div class="form-group row">
+                  <div class="col-sm-3">Anonymous</div>
+                  <div class="col-sm-9">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="anonymous" name="anonymous">
+                      <label class="form-check-label" for="anonymous">
+                        Share Turnip price only
+                      </label>
+                    </div>
+                  </div>
+                </div> -->
+              <div>
+                <button type="submit" class="btn btn-primary" id="sellSubmitButton">
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="sell
+                  Spinner"
+                    style="display: none;"></span>
+                  <span id="sellSubmitButtonText">제출하기</span>
+                </button>
+              </div>
+              <div class="alert alert-success mt-3" id="sellConfirmation" role="alert" style="display: none;">
+                판매글 작성이 완료되었습니다.
+              </div>
+              <div class="alert alert-danger mt-3" id="sellModalErrorMessage" role="alert" style="display: none;"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- MODAL END -->
+    <!-- Sell Modal -->
+    <div class="modal fade" id="buyModal" data-backdrop="static" tabindex="-1" role="dialog"
+      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">
+              구매글 올리기
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="buy-form">
+              <div class="form-group row">
+                <label for="turnipPrice" class="col-sm-4 col-form-label">판매주민</label>
+                <div class="col-sm-5">
+                  <img src="https://cdn.turnips.trade/favicon-32x32.png" />
+                  <span>주민을 검색하세요</span>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="turnipPrice" class="col-sm-4 col-form-label"></label>
+                <div class="col-sm-5">
+                  <input type="text" class="form-control" id="turnipPrice" placeholder="주민 이름" name="price" required="">
+                </div>
+                <div><button class="btn btn-outline-primary">검색하기</button></div>
+              </div>
+              <div class="form-group row">
+                <label for="dodoCode" class="col-sm-4 col-form-label">가격</label>
+                <div class="col-sm-5">
+                  <input type="number" class="form-control" id="turnipPrice" placeholder="예시 : 1" name="price" min="1"
+                    max="9999" step="1" required="">
+                </div>
+                <div>
+                  <select class="custom-select" id="price_type" name="price_type">
+                    <option selected="" value="마일">마일</option>
+                    <option value="덩">덩</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="nothing" class="col-sm-4 col-form-label"></label>
+                <div class="col-sm-5">
+                  <p>1마일 : 마일 여행권 1장<br />1덩 : 99,000벨</p>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="turnipPrice" class="col-sm-4 col-form-label">연락처</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" id="address" placeholder="원하시는 연락처를 입력해주세요" name="address"
+                    required="">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="turnipPrice" class="col-sm-4 col-form-label">비밀번호</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" id="pword" placeholder="글 삭제 시 필요합니다" name="pword"
+                    required="">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="note" class="col-sm-4 col-form-label">메모</label>
+                <div class="col-sm-8">
+                  <textarea type="text" class="form-control" id="note" aria-describedby="note"
+                    placeholder="예시 : 가격 협상 가능해요!" name="note" maxlength="200" value=""></textarea>
+                </div>
+              </div>
+              <!-- <div class="form-group row">
+                  <div class="col-sm-3">Anonymous</div>
+                  <div class="col-sm-9">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="anonymous" name="anonymous">
+                      <label class="form-check-label" for="anonymous">
+                        Share Turnip price only
+                      </label>
+                    </div>
+                  </div>
+                </div> -->
+              <div>
+                <button type="submit" class="btn btn-primary" id="buySubmitButton">
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="buySpinner"
+                    style="display: none;"></span>
+                  <span id="buySubmitButtonText">제출하기</span>
+                </button>
+              </div>
+              <div class="alert alert-success mt-3" id="buyConfirmation" role="alert" style="display: none;">
+                구매글 작성이 완료되었습니다.
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- MODAL END -->
+    <!-- Sell Detail Modal -->
+    <div class="modal fade" id="SellDetailModal" data-backdrop="static" tabindex="-1" role="dialog"
+      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">
+              판매글 상세정보
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="buy-form">
+              <div class="form-group row">
+                <label for="dodoCode" class="col-sm-4 col-form-label">판매 주민</label>
+                <div class="col-sm-8">
+                  <img src="https://cdn.turnips.trade/favicon-32x32.png" />
+                  <span>너굴?</span>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="fruit" class="col-sm-4 col-form-label">가격</label>
+                <div class="col-sm-8">
+                  <p class="h1" id="recordDetailModalFruit">sample 마일</p>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="nothing" class="col-sm-4 col-form-label"></label>
+                <div class="col-sm-5">
+                  <p>1마일 : 마일 여행권 1장<br />1덩 : 99,000벨</p>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="note" class="col-sm-4 col-form-label">연락처</label>
+                <div class="col-sm-8">
+                  <p id="recordDetailModalNote"></p>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="note" class="col-sm-4 col-form-label">메모</label>
+                <div class="col-sm-8">
+                  <p id="recordDetailModalNote"></p>
+                </div>
+              </div>
+              <div>
+                <input type="text" class="form-control" id="pword" placeholder="삭제하려면 비번을 입력해주세요" name="pword"
+                required="">
+                <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+                  닫기
+                </button></span>
+                <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+                  삭제하기
+                </button></span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- MODAL END -->
+        <!-- Buy Detail Modal -->
+        <div class="modal fade" id="BuyDetailModal" data-backdrop="static" tabindex="-1" role="dialog"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                판매글 상세정보
+              </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form id="buy-form">
+                <div class="form-group row">
+                  <label for="dodoCode" class="col-sm-4 col-form-label">판매 주민</label>
+                  <div class="col-sm-8">
+                    <img src="https://cdn.turnips.trade/favicon-32x32.png" />
+                    <span>너굴?</span>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="fruit" class="col-sm-4 col-form-label">가격</label>
+                  <div class="col-sm-8">
+                    <p class="h1" id="recordDetailModalFruit">sample 마일</p>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="nothing" class="col-sm-4 col-form-label"></label>
+                  <div class="col-sm-5"> 
+                    <p>1마일 : 마일 여행권 1장<br />1덩 : 99,000벨</p>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="note" class="col-sm-4 col-form-label">연락처</label>
+                  <div class="col-sm-8">
+                    <p id="recordDetailModalNote"></p>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="note" class="col-sm-4 col-form-label">메모</label>
+                  <div class="col-sm-8">
+                    <p id="recordDetailModalNote"></p>
+                  </div>
+                </div>
+                <div>
+                  <input type="text" class="form-control" id="pword" placeholder="삭제하려면 비번을 입력해주세요" name="pword"
+                  required="">
+                  <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+                    닫기
+                  </button></span>
+                  <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+                    삭제하기
+                  </button></span>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- MODAL END -->
+    <!-- Footer -->
+    <footer class="my-5 pt-5 text-muted text-center text-small">
+      <p class="mb-1">건의사항은 이쪽으로 :  <a href="mailto:haiaanbyul@gmail.com">haiaanbyul@gmail.com</a></p>
+    </footer>
+    <!-- Fotter End -->
+  </div>
+  <script>
+
+    // function getLocalDate() {
+    //   var d = new Date(),
+    //     month = "" + (d.getMonth() + 1),
+    //     day = "" + d.getDate(),
+    //     year = d.getFullYear();
+
+    //   if (month.length < 2) month = "0" + month;
+    //   if (day.length < 2) day = "0" + day;
+
+    //   return [year, month, day].join("-");
+    // }
+
+  </script>
+
+</body>
+
+</html>
