@@ -34,6 +34,36 @@
     gtag("js", new Date());
 
     gtag("config", "G-KG81BCCHRP");
+
+    function VillagerSearch(name_give){
+    
+      $.ajax({
+          type: "GET",
+          url: "/",
+          data: {name_give:name_give},
+          success: function(response){
+            const img = response['villager']['img'];
+            const name = response['villager']['name'];
+
+            if(response['result'] == 'success'){
+              $('.villagerimg_searched').attr({
+                width: 32,
+                height: 32,
+                src: "../static/villagers/"+img
+              });
+
+              $('.villagername_searched').val(name);
+            }else{
+              alert("에러! 에러! 뭔진 모르겠지만 에러!!");
+            }
+          }
+        })
+
+
+
+    }
+
+
   </script>
   <style type="text/css">
     /* Chart.js */
@@ -168,22 +198,22 @@
               <div class="form-group row">
                 <label for="turnipPrice" class="col-sm-4 col-form-label">판매주민</label>
                 <div class="col-sm-5">
-                  <img src="https://cdn.turnips.trade/favicon-32x32.png" />
-                  <span>주민을 검색하세요</span>
+                  <img class="villagerimg_searched" src="https://cdn.turnips.trade/favicon-32x32.png" />
+                  <span class="villagername_searched">주민을 검색하세요</span>
                 </div>
               </div>
               <div class="form-group row">
                 <label for="turnipPrice" class="col-sm-4 col-form-label"></label>
                 <div class="col-sm-5">
-                  <input type="text" class="form-control" id="turnipPrice" placeholder="주민 이름" name="price" required="">
+                  <input type="text" class="form-control villager_search" placeholder="주민 이름" name="villager_name" >
                 </div>
-                <div><button class="btn btn-outline-primary">검색하기</button></div>
+                <div><button class="btn btn-outline-primary" onclick="VillagerSearch($('#sellModal.villager_search').val())">검색하기</button></div>
               </div>
               <div class="form-group row">
                 <label for="dodoCode" class="col-sm-4 col-form-label">가격</label>
                 <div class="col-sm-5">
                   <input type="number" class="form-control" id="turnipPrice" placeholder="예시 : 1" name="price" min="1"
-                    max="9999" step="1" required="">
+                    max="9999" step="1" >
                 </div>
                 <div>
                   <select class="custom-select" id="price_type" name="price_type">
@@ -202,14 +232,14 @@
                 <label for="turnipPrice" class="col-sm-4 col-form-label">연락처</label>
                 <div class="col-sm-8">
                   <input type="text" class="form-control" id="address" placeholder="원하시는 연락처를 입력해주세요" name="address"
-                    required="">
+                    >
                 </div>
               </div>
               <div class="form-group row">
                 <label for="turnipPrice" class="col-sm-4 col-form-label">비밀번호</label>
                 <div class="col-sm-8">
                   <input type="text" class="form-control" id="pword" placeholder="글 삭제 시 필요합니다" name="pword"
-                    required="">
+                    >
                 </div>
               </div>
               <div class="form-group row">
@@ -264,24 +294,24 @@
           <div class="modal-body">
             <form id="buy-form">
               <div class="form-group row">
-                <label for="turnipPrice" class="col-sm-4 col-form-label">판매주민</label>
+                <label for="turnipPrice" class="col-sm-4 col-form-label">구매주민</label>
                 <div class="col-sm-5">
-                  <img src="https://cdn.turnips.trade/favicon-32x32.png" />
-                  <span>주민을 검색하세요</span>
+                  <img class="villagerimg_searched" src="https://cdn.turnips.trade/favicon-32x32.png" />
+                  <span class="villagername_searched">주민을 검색하세요</span>
                 </div>
               </div>
               <div class="form-group row">
                 <label for="turnipPrice" class="col-sm-4 col-form-label"></label>
                 <div class="col-sm-5">
-                  <input type="text" class="form-control" id="turnipPrice" placeholder="주민 이름" name="price" required="">
+                  <input type="text" class="form-control villager_search" id="turnipPrice" placeholder="주민 이름" name="villagaer_name" >
                 </div>
-                <div><button class="btn btn-outline-primary">검색하기</button></div>
+                <div><button type="button" class="btn btn-outline-primary" onclick="VillagerSearch($('#buyModal.villager_search').val())" >검색하기</button></div>
               </div>
               <div class="form-group row">
                 <label for="dodoCode" class="col-sm-4 col-form-label">가격</label>
                 <div class="col-sm-5">
                   <input type="number" class="form-control" id="turnipPrice" placeholder="예시 : 1" name="price" min="1"
-                    max="9999" step="1" required="">
+                    max="9999" step="1" >
                 </div>
                 <div>
                   <select class="custom-select" id="price_type" name="price_type">
@@ -300,14 +330,14 @@
                 <label for="turnipPrice" class="col-sm-4 col-form-label">연락처</label>
                 <div class="col-sm-8">
                   <input type="text" class="form-control" id="address" placeholder="원하시는 연락처를 입력해주세요" name="address"
-                    required="">
+                    >
                 </div>
               </div>
               <div class="form-group row">
                 <label for="turnipPrice" class="col-sm-4 col-form-label">비밀번호</label>
                 <div class="col-sm-8">
                   <input type="text" class="form-control" id="pword" placeholder="글 삭제 시 필요합니다" name="pword"
-                    required="">
+                    >
                 </div>
               </div>
               <div class="form-group row">
@@ -392,7 +422,7 @@
               </div>
               <div>
                 <input type="text" class="form-control" id="pword" placeholder="삭제하려면 비번을 입력해주세요" name="pword"
-                required="">
+                >
                 <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
                   닫기
                 </button></span>
@@ -454,7 +484,7 @@
                 </div>
                 <div>
                   <input type="text" class="form-control" id="pword" placeholder="삭제하려면 비번을 입력해주세요" name="pword"
-                  required="">
+                  >
                   <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
                     닫기
                   </button></span>
