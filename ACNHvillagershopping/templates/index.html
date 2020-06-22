@@ -15,7 +15,7 @@
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
   <!-- css 파일 넣기 -->
-  <link rel="stylesheet" type="text/css" href="./static/index.css">
+  <link rel="stylesheet" type="text/css" href="../static/index.css">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
@@ -35,32 +35,154 @@
 
     gtag("config", "G-KG81BCCHRP");
 
-    function VillagerSearch(name_give){
-    
+    $(document).ready(function(){
+      $('table tbody').empty();
+      // 24hDelete();
+      TableSetting();
+    });
+
+    function TableSetting() {
       $.ajax({
-          type: "GET",
-          url: "/",
-          data: {name_give:name_give},
-          success: function(response){
-            const img = response['villager']['img'];
-            const name = response['villager']['name'];
+        type: "GET",
+        url: "api/sellTableSet",
+        data: {},
+        success: function (response) {
+          let sellArticles = response['sellArticles'];
 
-            if(response['result'] == 'success'){
-              $('.villagerimg_searched').attr({
-                width: 32,
-                height: 32,
-                src: "../static/villagers/"+img
-              });
+          sellArticles.forEach(function(article){
+            let html = `
+            <tr>
+              <td></td>
+              <td>${article["name"]}</td>
+              <td>${article["price"]}${article["pricetype"]}</td>
+              <td>${TimeShow(article["time"])}</td>
+              <td>${article["address"]}</td>
+              <td><button class="btn btn-primary" data-toggle="modal" data-target="#SellDetailModal" id="${article["_id"]}">자세히 보기</button></td>
+            </tr>
+            `;
 
-              $('.villagername_searched').val(name);
-            }else{
-              alert("에러! 에러! 뭔진 모르겠지만 에러!!");
-            }
+            $('#sell_tablebody').append(html);
+          });
+        }
+      })
+
+      $.ajax({
+        type: "GET",
+        url: "api/buyTableSet",
+        data: {},
+        success: function (response) {
+          let buyArticles = response['buyArticles'];
+
+          buyArticles.forEach(function(article){
+            let html = `
+              <tr>
+                <td></td>
+                <td>${article["name"]}</td>
+                <td>${article["price"]}${article["pricetype"]}</td>
+                <td>${TimeShow(article["time"])}</td>
+                <td>${article["address"]}</td>
+                <td><button class="btn btn-primary" data-toggle="modal" data-target="#BuyDetailModal" id="${article["_id"]}">자세히 보기</button></td>
+              </tr>
+              `;
+
+            $('#buy_tablebody').append(html);
+          });
+        }
+      })
+    }
+
+    function TimeShow(time){
+
+      let now = new Date().getTime();
+
+      if (0 < time + 24*60*60*1000 - now  < 24*60*60*1000) {
+        let hour = (time + 24*60*60*1000 - now)/60/60/1000;
+        let min = ((time + 24*60*60*1000 - now)-(hour*60*60*1000))/60/1000;
+        let sec = ((time + 24*60*60*1000 - now)-(hour*60*60*1000)-(min*60*1000))/1000;
+
+        let show_hour = Math.floor(hour);
+        let show_min = Math.floor(min);
+        let show_sec = Math.floor(sec);
+
+        let text = show_hour +":"+ show_min +":"+ show_sec+":";
+
+      }else { 
+        let text = "거래종료"
+      }
+      
+      return text;
+    }
+
+    function VillagerSearch(villager_name) {
+
+      $.ajax({
+        type: "GET",
+        url: "/api/search",
+        data: { name_give: villager_name },
+        success: function (response) {
+          const name = response['villager']['name'];
+          const img = response['villager']['img'];
+
+          if (response['result'] == 'success') {
+            $('.villagerimg_searched').attr({
+              width: 64,
+              height: 64,
+              src: "../static/villagers/" + img
+            });
+
+            $(".villagername_searched").html(name);
+
+          } else {
+            alert("서버에서 정보가 안온다");
           }
-        })
+        }
+      })
 
 
 
+    }
+
+    function SellArticleNew() {
+
+      $.ajax({
+        type: "POST",
+        url: "/api/SellArticleNew",
+        data: {
+          name_give: $('#sell_name').html(),
+          price_give: $('#sell_price').val(),
+          pricetype_give: $('#sell_pricetype').val(),
+          address_give: $('#sell_address').val(),
+          password_give: $('#sell_pword').val(),
+          note_give: $('#sell_note').val(),
+          time_now: new Date().getTime()
+        },
+        success: function (response) {
+          alert("판매글 작성 완료!");
+          $('#buyModal').modal('hide');
+        }
+      })
+    }
+
+
+    function BuyArticleNew() {
+
+      $.ajax({
+        type: "POST",
+        url: "/api/BuyArticleNew",
+        data: {
+          name_give: $('#buy_name').html(),
+          price_give: $('#buy_price').val(),
+          pricetype_give: $('#buy_pricetype').val(),
+          address_give: $('#buy_address').val(),
+          password_give: $('#buy_pword').val(),
+          note_give: $('#buy_note').val(),
+          time_now: new Date().getTime()
+        },
+        success: function (response) {
+          alert("구매글 작성 완료!");
+          $('#buyModal').modal('hide');
+        }
+      })
     }
 
 
@@ -137,7 +259,7 @@
         판매해요
       </h3>
 
-      <table class="table table-hover table-borderless table-striped">
+      <table class="table table-hover table-borderless table-striped" id="sell_table">
         <thead>
           <tr>
             <th scope="col-2">#</th>
@@ -145,9 +267,10 @@
             <th scope="col-2">가격</th>
             <th scope="col-2">남은 시간</th>
             <th scope="col-2">연락처</th>
+            <th scope="col-2"></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="sell_tablebody">
 
         </tbody>
       </table>
@@ -160,7 +283,7 @@
       <h3 class="border-bottom border-gray pb-2 mb-0">
         구매해요
       </h3>
-      <table class="table table-hover table-borderless table-striped">
+      <table class="table table-hover table-borderless table-striped" id="buy_table">
         <thead>
           <tr>
             <th scope="col-2">#</th>
@@ -170,7 +293,7 @@
             <th scope="col-2">연락처</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="buy_tablebody">
 
         </tbody>
       </table>
@@ -180,7 +303,7 @@
     </div>
 
 
-    <!-- Buy Modal -->
+    <!-- Sell Modal -->
     <div class="modal fade" id="sellModal" data-backdrop="static" tabindex="-1" role="dialog"
       aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -194,29 +317,31 @@
             </button>
           </div>
           <div class="modal-body">
-            <form id="sell-form">
+            <div id="sell-form">
               <div class="form-group row">
                 <label for="turnipPrice" class="col-sm-4 col-form-label">판매주민</label>
                 <div class="col-sm-5">
                   <img class="villagerimg_searched" src="https://cdn.turnips.trade/favicon-32x32.png" />
-                  <span class="villagername_searched">주민을 검색하세요</span>
+                  <span class="villagername_searched" id="sell_name">주민을 검색하세요</span>
                 </div>
               </div>
               <div class="form-group row">
                 <label for="turnipPrice" class="col-sm-4 col-form-label"></label>
                 <div class="col-sm-5">
-                  <input type="text" class="form-control villager_search" placeholder="주민 이름" name="villager_name" >
+                  <input type="text" class="form-control villager_search" id="sellvillager_namesearch"
+                    placeholder="주민 이름">
                 </div>
-                <div><button class="btn btn-outline-primary" onclick="VillagerSearch($('#sellModal.villager_search').val())">검색하기</button></div>
+                <div><button class="btn btn-outline-primary"
+                    onclick="VillagerSearch($('#sellvillager_namesearch').val())">검색하기</button></div>
               </div>
               <div class="form-group row">
                 <label for="dodoCode" class="col-sm-4 col-form-label">가격</label>
                 <div class="col-sm-5">
-                  <input type="number" class="form-control" id="turnipPrice" placeholder="예시 : 1" name="price" min="1"
-                    max="9999" step="1" >
+                  <input type="number" class="form-control" id="sell_price" placeholder="예시 : 1" min="1" max="9999"
+                    step="1">
                 </div>
                 <div>
-                  <select class="custom-select" id="price_type" name="price_type">
+                  <select class="custom-select" id="sell_pricetype" name="price_type">
                     <option selected="" value="마일">마일</option>
                     <option value="덩">덩</option>
                   </select>
@@ -231,22 +356,20 @@
               <div class="form-group row">
                 <label for="turnipPrice" class="col-sm-4 col-form-label">연락처</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" id="address" placeholder="원하시는 연락처를 입력해주세요" name="address"
-                    >
+                  <input type="text" class="form-control" id="sell_address" placeholder="원하시는 연락처를 입력해주세요">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="turnipPrice" class="col-sm-4 col-form-label">비밀번호</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" id="pword" placeholder="글 삭제 시 필요합니다" name="pword"
-                    >
+                  <input type="text" class="form-control" id="sell_pword" placeholder="글 삭제 시 필요합니다">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="note" class="col-sm-4 col-form-label">메모</label>
                 <div class="col-sm-8">
-                  <textarea type="text" class="form-control" id="note" aria-describedby="note"
-                    placeholder="예시 : 가격 협상 가능해요!" name="note" maxlength="200" value=""></textarea>
+                  <textarea type="text" class="form-control" id="sell_note" aria-describedby="note"
+                    placeholder="예시 : 가격 협상 가능해요!" maxlength="200" value=""></textarea>
                 </div>
               </div>
               <!-- <div class="form-group row">
@@ -261,24 +384,20 @@
                   </div>
                 </div> -->
               <div>
-                <button type="submit" class="btn btn-primary" id="sellSubmitButton">
+                <button type="submit" class="btn btn-primary" id="sellSubmitButton" onclick="SellArticleNew()">
                   <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="sell
-                  Spinner"
-                    style="display: none;"></span>
+                  Spinner" style="display: none;"></span>
                   <span id="sellSubmitButtonText">제출하기</span>
                 </button>
               </div>
-              <div class="alert alert-success mt-3" id="sellConfirmation" role="alert" style="display: none;">
-                판매글 작성이 완료되었습니다.
-              </div>
               <div class="alert alert-danger mt-3" id="sellModalErrorMessage" role="alert" style="display: none;"></div>
-            </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
     <!-- MODAL END -->
-    <!-- Sell Modal -->
+    <!-- Buy Modal -->
     <div class="modal fade" id="buyModal" data-backdrop="static" tabindex="-1" role="dialog"
       aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -292,29 +411,31 @@
             </button>
           </div>
           <div class="modal-body">
-            <form id="buy-form">
+            <div id="buy-form">
               <div class="form-group row">
                 <label for="turnipPrice" class="col-sm-4 col-form-label">구매주민</label>
                 <div class="col-sm-5">
                   <img class="villagerimg_searched" src="https://cdn.turnips.trade/favicon-32x32.png" />
-                  <span class="villagername_searched">주민을 검색하세요</span>
+                  <span class="villagername_searched" id="buy_name">주민을 검색하세요</span>
                 </div>
               </div>
               <div class="form-group row">
                 <label for="turnipPrice" class="col-sm-4 col-form-label"></label>
                 <div class="col-sm-5">
-                  <input type="text" class="form-control villager_search" id="turnipPrice" placeholder="주민 이름" name="villagaer_name" >
+                  <input type="text" class="form-control villager_search" id="buyvillager_namesearch"
+                    placeholder="주민 이름">
                 </div>
-                <div><button type="button" class="btn btn-outline-primary" onclick="VillagerSearch($('#buyModal.villager_search').val())" >검색하기</button></div>
+                <div><button type="button" class="btn btn-outline-primary"
+                    onclick="VillagerSearch($('#buyvillager_namesearch').val())">검색하기</button></div>
               </div>
               <div class="form-group row">
                 <label for="dodoCode" class="col-sm-4 col-form-label">가격</label>
                 <div class="col-sm-5">
-                  <input type="number" class="form-control" id="turnipPrice" placeholder="예시 : 1" name="price" min="1"
-                    max="9999" step="1" >
+                  <input type="number" class="form-control" id="buy_price" placeholder="예시 : 1" min="1" max="9999"
+                    step="1">
                 </div>
                 <div>
-                  <select class="custom-select" id="price_type" name="price_type">
+                  <select class="custom-select" id="buy_pricetype">
                     <option selected="" value="마일">마일</option>
                     <option value="덩">덩</option>
                   </select>
@@ -329,22 +450,21 @@
               <div class="form-group row">
                 <label for="turnipPrice" class="col-sm-4 col-form-label">연락처</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" id="address" placeholder="원하시는 연락처를 입력해주세요" name="address"
-                    >
+                  <input type="text" class="form-control" id="buy_address" placeholder="원하시는 연락처를 입력해주세요"
+                    name="address">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="turnipPrice" class="col-sm-4 col-form-label">비밀번호</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" id="pword" placeholder="글 삭제 시 필요합니다" name="pword"
-                    >
+                  <input type="text" class="form-control" id="buy_pword" placeholder="글 삭제 시 필요합니다" name="pword">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="note" class="col-sm-4 col-form-label">메모</label>
                 <div class="col-sm-8">
-                  <textarea type="text" class="form-control" id="note" aria-describedby="note"
-                    placeholder="예시 : 가격 협상 가능해요!" name="note" maxlength="200" value=""></textarea>
+                  <textarea type="text" class="form-control" id="buy_note" aria-describedby="note"
+                    placeholder="예시 : 가격 협상 가능해요!" maxlength="200" value=""></textarea>
                 </div>
               </div>
               <!-- <div class="form-group row">
@@ -359,150 +479,147 @@
                   </div>
                 </div> -->
               <div>
-                <button type="submit" class="btn btn-primary" id="buySubmitButton">
+                <button type="submit" class="btn btn-primary" id="buySubmitButton" onclick="BuyArticleNew()">
                   <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="buySpinner"
                     style="display: none;"></span>
                   <span id="buySubmitButtonText">제출하기</span>
                 </button>
               </div>
-              <div class="alert alert-success mt-3" id="buyConfirmation" role="alert" style="display: none;">
-                구매글 작성이 완료되었습니다.
-              </div>
-            </form>
+
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- MODAL END -->
-    <!-- Sell Detail Modal -->
-    <div class="modal fade" id="SellDetailModal" data-backdrop="static" tabindex="-1" role="dialog"
-      aria-labelledby="staticBackdropLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">
-              판매글 상세정보
-            </h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form id="buy-form">
-              <div class="form-group row">
-                <label for="dodoCode" class="col-sm-4 col-form-label">판매 주민</label>
-                <div class="col-sm-8">
-                  <img src="https://cdn.turnips.trade/favicon-32x32.png" />
-                  <span>너굴?</span>
-                </div>
+  </div>
+  <!-- MODAL END -->
+  <!-- Sell Detail Modal -->
+  <div class="modal fade" id="SellDetailModal" data-backdrop="static" tabindex="-1" role="dialog"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">
+            판매글 상세정보
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="buy-form">
+            <div class="form-group row">
+              <label for="dodoCode" class="col-sm-4 col-form-label">판매 주민</label>
+              <div class="col-sm-8">
+                <img src="https://cdn.turnips.trade/favicon-32x32.png" />
+                <span>너굴?</span>
               </div>
-              <div class="form-group row">
-                <label for="fruit" class="col-sm-4 col-form-label">가격</label>
-                <div class="col-sm-8">
-                  <p class="h1" id="recordDetailModalFruit">sample 마일</p>
-                </div>
+            </div>
+            <div class="form-group row">
+              <label for="fruit" class="col-sm-4 col-form-label">가격</label>
+              <div class="col-sm-8">
+                <p class="h1" id="recordDetailModalFruit">sample 마일</p>
               </div>
-              <div class="form-group row">
-                <label for="nothing" class="col-sm-4 col-form-label"></label>
-                <div class="col-sm-5">
-                  <p>1마일 : 마일 여행권 1장<br />1덩 : 99,000벨</p>
-                </div>
+            </div>
+            <div class="form-group row">
+              <label for="nothing" class="col-sm-4 col-form-label"></label>
+              <div class="col-sm-5">
+                <p>1마일 : 마일 여행권 1장<br />1덩 : 99,000벨</p>
               </div>
-              <div class="form-group row">
-                <label for="note" class="col-sm-4 col-form-label">연락처</label>
-                <div class="col-sm-8">
-                  <p id="recordDetailModalNote"></p>
-                </div>
+            </div>
+            <div class="form-group row">
+              <label for="note" class="col-sm-4 col-form-label">연락처</label>
+              <div class="col-sm-8">
+                <p id="recordDetailModalNote"></p>
               </div>
-              <div class="form-group row">
-                <label for="note" class="col-sm-4 col-form-label">메모</label>
-                <div class="col-sm-8">
-                  <p id="recordDetailModalNote"></p>
-                </div>
+            </div>
+            <div class="form-group row">
+              <label for="note" class="col-sm-4 col-form-label">메모</label>
+              <div class="col-sm-8">
+                <p id="recordDetailModalNote"></p>
               </div>
-              <div>
-                <input type="text" class="form-control" id="pword" placeholder="삭제하려면 비번을 입력해주세요" name="pword"
-                >
-                <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+            </div>
+            <div>
+              <input type="text" class="form-control" id="selldelete_pword" placeholder="삭제하려면 비번을 입력해주세요" name="pword">
+              <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
                   닫기
                 </button></span>
-                <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+              <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
                   삭제하기
                 </button></span>
-              </div>
-            </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- MODAL END -->
-        <!-- Buy Detail Modal -->
-        <div class="modal fade" id="BuyDetailModal" data-backdrop="static" tabindex="-1" role="dialog"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="staticBackdropLabel">
-                판매글 상세정보
-              </h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-              </button>
+  </div>
+  <!-- MODAL END -->
+  <!-- Buy Detail Modal -->
+  <div class="modal fade" id="BuyDetailModal" data-backdrop="static" tabindex="-1" role="dialog"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">
+            판매글 상세정보
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="buy-form">
+            <div class="form-group row">
+              <label for="dodoCode" class="col-sm-4 col-form-label">판매 주민</label>
+              <div class="col-sm-8">
+                <img src="https://cdn.turnips.trade/favicon-32x32.png" />
+                <span>너굴?</span>
+              </div>
             </div>
-            <div class="modal-body">
-              <form id="buy-form">
-                <div class="form-group row">
-                  <label for="dodoCode" class="col-sm-4 col-form-label">판매 주민</label>
-                  <div class="col-sm-8">
-                    <img src="https://cdn.turnips.trade/favicon-32x32.png" />
-                    <span>너굴?</span>
-                  </div>
-                </div>
-                <div class="form-group row">
-                  <label for="fruit" class="col-sm-4 col-form-label">가격</label>
-                  <div class="col-sm-8">
-                    <p class="h1" id="recordDetailModalFruit">sample 마일</p>
-                  </div>
-                </div>
-                <div class="form-group row">
-                  <label for="nothing" class="col-sm-4 col-form-label"></label>
-                  <div class="col-sm-5"> 
-                    <p>1마일 : 마일 여행권 1장<br />1덩 : 99,000벨</p>
-                  </div>
-                </div>
-                <div class="form-group row">
-                  <label for="note" class="col-sm-4 col-form-label">연락처</label>
-                  <div class="col-sm-8">
-                    <p id="recordDetailModalNote"></p>
-                  </div>
-                </div>
-                <div class="form-group row">
-                  <label for="note" class="col-sm-4 col-form-label">메모</label>
-                  <div class="col-sm-8">
-                    <p id="recordDetailModalNote"></p>
-                  </div>
-                </div>
-                <div>
-                  <input type="text" class="form-control" id="pword" placeholder="삭제하려면 비번을 입력해주세요" name="pword"
-                  >
-                  <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
-                    닫기
-                  </button></span>
-                  <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
-                    삭제하기
-                  </button></span>
-                </div>
-              </form>
+            <div class="form-group row">
+              <label for="fruit" class="col-sm-4 col-form-label">가격</label>
+              <div class="col-sm-8">
+                <p class="h1" id="recordDetailModalFruit">sample 마일</p>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="nothing" class="col-sm-4 col-form-label"></label>
+              <div class="col-sm-5">
+                <p>1마일 : 마일 여행권 1장<br />1덩 : 99,000벨</p>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="note" class="col-sm-4 col-form-label">연락처</label>
+              <div class="col-sm-8">
+                <p id="recordDetailModalNote"></p>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="note" class="col-sm-4 col-form-label">메모</label>
+              <div class="col-sm-8">
+                <p id="recordDetailModalNote"></p>
+              </div>
+            </div>
+            <div>
+              <input type="text" class="form-control" id="buydelete_pword" placeholder="삭제하려면 비번을 입력해주세요" name="pword">
+              <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+                  닫기
+                </button></span>
+              <span><button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+                  삭제하기
+                </button></span>
             </div>
           </div>
         </div>
       </div>
-      <!-- MODAL END -->
-    <!-- Footer -->
-    <footer class="my-5 pt-5 text-muted text-center text-small">
-      <p class="mb-1">건의사항은 이쪽으로 :  <a href="mailto:haiaanbyul@gmail.com">haiaanbyul@gmail.com</a></p>
-    </footer>
-    <!-- Fotter End -->
+    </div>
+  </div>
+  <!-- MODAL END -->
+  <!-- Footer -->
+  <footer class="my-5 pt-5 text-muted text-center text-small">
+    <p class="mb-1">건의사항은 이쪽으로 : <a href="mailto:haiaanbyul@gmail.com">haiaanbyul@gmail.com</a></p>
+  </footer>
+  <!-- Fotter End -->
   </div>
   <script>
 

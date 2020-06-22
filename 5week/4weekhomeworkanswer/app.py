@@ -16,6 +16,7 @@ def order_create():
     count_receive = request.form['count_give']
     address_receive = request.form['address_give']
     phone_receive = request.form['phone_give']
+   
 
     db.candle.insert_one({
         'name':name_receive,

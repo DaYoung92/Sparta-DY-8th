@@ -1,0 +1,113 @@
+<html>
+
+<head>
+
+<title>이벤트 남은 시간 카운트다운</title>
+
+<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'>
+
+<style type="text/css">
+
+<!--
+
+body {font-size: 9pt; font-family: 돋움,Arial; color: #58595B;}
+
+-->
+
+</style>
+
+<script language='JavaScript'>
+
+<!--
+
+var timerID = null;
+
+var timerRunning = false;
+
+function stopclock () {
+
+if(timerRunning) clearTimeout(timerID);
+
+timerRunning = false;
+
+}
+
+function startclock () {
+
+stopclock();
+
+showtime();
+
+}
+
+function showtime() {
+
+now = new Date();
+
+var CurHour = now.getHours();
+
+var CurMinute = now.getMinutes();
+
+var CurMonth = now.getMonth();
+
+var CurDate = now.getDate();
+
+var CurSecond = now.getSeconds();
+
+var Hourleft = 23 - CurHour
+
+var Minuteleft = 59 - CurMinute
+
+var Secondleft = 59 - CurSecond
+
+var Monthleft = 5 - CurMonth
+
+var Dateleft = 20 - CurDate
+
+var obj = document.getElementById('left_time');
+
+event_day = new Date(2020,7,23,23,59,59)
+
+if((event_day.getTime() - now.getTime()) > 0){
+
+var leftStr = "<div>남은시간 : ";
+
+if(Dateleft > 0) leftStr += "<b>"+Dateleft+"</b>일 ";
+
+if(Hourleft > 0) leftStr += "<b>"+Hourleft+"</b>시간 ";
+
+if(Minuteleft > 0) leftStr += "<b>"+Minuteleft+"</b>분 ";
+
+leftStr += "<b>"+Secondleft+"</b>초</div>";
+
+obj.innerHTML = leftStr;
+
+}
+
+else obj.innerHTML = '<div>판매가 종료되었습니다</div>';
+
+now = null;
+
+timerID = setTimeout("showtime()",1000);
+
+timerRunning = true;
+
+}
+
+//-->
+
+</script>
+
+</head>
+
+<body bgcolor='#FFFFFF' onLoad="startclock();">
+
+<div id='left_time'></div>
+
+</body>
+
+</html>
+
+
+
+출처: https://sukkyu.tistory.com/84 [썩구노트]
