@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
+from bson import ObjectId
 
 client = MongoClient('localhost', port= 27017)
 db = client.acnhDB
@@ -51,6 +52,8 @@ def buyTableSet():
             '_id': str(object_id)
         })
         results.append(buy)
+
+    # print(results)
     
     return jsonify({
         'result':'success',
@@ -103,6 +106,20 @@ def buyArticleNew():
 
     return jsonify({'result':'success'})
 
+@app.route('/api/SellOneView', methods=['GET'])
+def SellArticleOneView():
+    id_receive = request.args.get('id')
+
+    o_id = ObjectId(id_receive)
+
+    article = db.SellArticle.find_one({'_id': o_id},{'_id':False, 'password':False})
+
+    print(list(article))
+
+    return jsonify({
+        'result' : 'success',
+        'article' : article
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

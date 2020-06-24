@@ -39,6 +39,7 @@
       $('table tbody').empty();
       // 24hDelete();
       TableSetting();
+      setInterval(TimeShowforAll,600);
     });
 
     function TableSetting() {
@@ -48,16 +49,18 @@
         data: {},
         success: function (response) {
           let sellArticles = response['sellArticles'];
+          let selltable_index = 0;
 
           sellArticles.forEach(function(article){
+            selltable_index ++;
             let html = `
             <tr>
-              <td></td>
+              <td>${selltable_index}</td>
               <td>${article["name"]}</td>
               <td>${article["price"]}${article["pricetype"]}</td>
-              <td>${TimeShow(article["time"])}</td>
+              <td><span class="openTimeSpan" data-open-time="${article["time"]}"></span></td>
               <td>${article["address"]}</td>
-              <td><button class="btn btn-primary" data-toggle="modal" data-target="#SellDetailModal" id="${article["_id"]}">자세히 보기</button></td>
+              <td><button class="btn btn-primary SellArticleOneView" id="${article["_id"]}">자세히 보기</button></td>
             </tr>
             `;
 
@@ -72,16 +75,19 @@
         data: {},
         success: function (response) {
           let buyArticles = response['buyArticles'];
+          let buytable_index = 0;
 
           buyArticles.forEach(function(article){
+            buytable_index ++;
+
             let html = `
               <tr>
-                <td></td>
+                <td>${buytable_index}</td>
                 <td>${article["name"]}</td>
                 <td>${article["price"]}${article["pricetype"]}</td>
-                <td>${TimeShow(article["time"])}</td>
+                <td><span class="openTimeSpan" data-open-time="${article["time"]}"></span></td>
                 <td>${article["address"]}</td>
-                <td><button class="btn btn-primary" data-toggle="modal" data-target="#BuyDetailModal" id="${article["_id"]}">자세히 보기</button></td>
+                <td><button class="btn btn-primary" id="${article["_id"]}">자세히 보기</button></td>
               </tr>
               `;
 
@@ -89,28 +95,90 @@
           });
         }
       })
+
     }
 
-    function TimeShow(time){
+    // function TimeShow(time){
 
-      let now = new Date().getTime();
+    //   let now = new Date().getTime();
+    //   let text = "";
+    //   let calsec = 1000;
+    //   let calmin = calsec*60;
+    //   let calhour = calmin*60;
+    //   let calday = calhour*24;
 
-      if (0 < time + 24*60*60*1000 - now  < 24*60*60*1000) {
-        let hour = (time + 24*60*60*1000 - now)/60/60/1000;
-        let min = ((time + 24*60*60*1000 - now)-(hour*60*60*1000))/60/1000;
-        let sec = ((time + 24*60*60*1000 - now)-(hour*60*60*1000)-(min*60*1000))/1000;
+    //   if (0 < time + calday - now  < calday) {
+    //     let distance = time + calday - now;
 
-        let show_hour = Math.floor(hour);
-        let show_min = Math.floor(min);
-        let show_sec = Math.floor(sec);
+    //     let day = Math.floor(distance/calday);
+    //     let hour = Math.floor(distance%calday/calhour);
+    //     let min = Math.floor(distance%calhour/calmin);
+    //     let sec = Math.floor(distance%calmin/calsec);
 
-        let text = show_hour +":"+ show_min +":"+ show_sec+":";
+    //     let show_hour = hour.toString();
+    //     let show_min = min.toString();
+    //     let show_sec = sec.toString();
 
-      }else { 
-        let text = "거래종료"
-      }
+    //     text = show_hour +":"+ show_min +":"+ show_sec;
+
+    //   }else { 
+    //     text = "거래종료"
+    //   }
       
-      return text;
+  
+    // }
+
+    function TimeShowforAll(){
+      $('.openTimeSpan').each(function(){
+        let time = Number($(this).attr('data-open-time'));
+        let now = new Date().getTime();
+        let text = "";
+        let calsec = 1000;
+        let calmin = calsec*60;
+        let calhour = calmin*60;
+        let calday = calhour*24;
+
+        if (time + calday - now > 0 &&  time + calday - now < calday) {
+          let distance = time + calday - now;
+
+          let day = Math.floor(distance/calday);
+          let hour = Math.floor(distance%calday/calhour);
+          let min = Math.floor(distance%calhour/calmin);
+          let sec = Math.floor(distance%calmin/calsec);
+
+          let show_hour ="";
+          let show_min = "";
+          let show_sec = "";
+          // console.log(new Date().getTime())
+
+          if(hour < 10){
+            show_hour = "0" + hour.toString();
+          }else{ 
+            show_hour = hour.toString();
+          }
+
+          if(min < 10){
+            show_min = "0" + min.toString();
+          }else{
+            show_min = min.toString();
+          }
+
+          if(sec < 10){
+            show_sec = "0" + sec.toString();
+          }else{
+            show_sec = sec.toString();
+          }
+          
+          
+
+          text = show_hour +":"+ show_min +":"+ show_sec;
+
+        }else { 
+        text = "거래종료"
+        }
+      
+        $(this).html(text);
+      });
     }
 
     function VillagerSearch(villager_name) {
@@ -144,47 +212,141 @@
 
     function SellArticleNew() {
 
-      $.ajax({
-        type: "POST",
-        url: "/api/SellArticleNew",
-        data: {
-          name_give: $('#sell_name').html(),
-          price_give: $('#sell_price').val(),
-          pricetype_give: $('#sell_pricetype').val(),
-          address_give: $('#sell_address').val(),
-          password_give: $('#sell_pword').val(),
-          note_give: $('#sell_note').val(),
-          time_now: new Date().getTime()
-        },
-        success: function (response) {
-          alert("판매글 작성 완료!");
-          $('#buyModal').modal('hide');
-        }
-      })
-    }
+      if($('#sell_name').html() == "주민을 검색하세요"){
 
+        alert("판매할 주민을 입력하고 검색하기 버튼을 눌러주세요");
+        return;
+
+      } else if($('#sell_price').val() == ''){
+
+         alert("판매가격을 입력해주세요");
+         return; 
+
+      } else if($('#sell_pricetype').val() == ''){
+
+          alert("가격 단위를 정해주세요");
+          return; 
+
+      } else if($('#sell_address').val() == ''){
+
+          alert("연락처를 입력해주세요");
+          return;
+
+      } else if($('#sell_pword').val() == ''){
+
+          alert("비밀번호를 입력해주세요\n글 삭제 시 필요합니다");
+          return;
+
+      } else{
+
+        $.ajax({
+          type: "POST",
+          url: "/api/SellArticleNew",
+          data: {
+            name_give: $('#sell_name').html(),
+            price_give: $('#sell_price').val(),
+            pricetype_give: $('#sell_pricetype').val(),
+            address_give: $('#sell_address').val(),
+            password_give: $('#sell_pword').val(),
+            note_give: $('#sell_note').val(),
+            time_now: new Date().getTime()
+          },
+          success: function (response) {
+            alert("판매글 작성 완료!");
+            $('#sellModal').modal('hide');
+            window.location.reload();
+          }
+         })
+      }
+
+      }
 
     function BuyArticleNew() {
+      if($('#sell_name').html() == "주민을 검색하세요"){
 
-      $.ajax({
-        type: "POST",
-        url: "/api/BuyArticleNew",
-        data: {
-          name_give: $('#buy_name').html(),
-          price_give: $('#buy_price').val(),
-          pricetype_give: $('#buy_pricetype').val(),
-          address_give: $('#buy_address').val(),
-          password_give: $('#buy_pword').val(),
-          note_give: $('#buy_note').val(),
-          time_now: new Date().getTime()
-        },
-        success: function (response) {
-          alert("구매글 작성 완료!");
-          $('#buyModal').modal('hide');
-        }
-      })
+        alert("구매할 주민을 입력하고 검색하기 버튼을 눌러주세요");
+        return;
+
+      } else if($('#sell_price').val() == ''){
+
+        alert("희망가격을 입력해주세요");
+        return; 
+
+      } else if($('#sell_pricetype').val() == ''){
+
+        alert("가격 단위를 정해주세요");
+        return; 
+
+      } else if($('#sell_address').val() == ''){
+
+        alert("연락처를 입력해주세요");
+        return;
+
+      } else if($('#sell_pword').val() == ''){
+
+        alert("비밀번호를 입력해주세요\n글 삭제 시 필요합니다");
+        return;
+
+      } else{
+
+        $.ajax({
+          type: "POST",
+          url: "/api/BuyArticleNew",
+          data: {
+            name_give: $('#buy_name').html(),
+            price_give: $('#buy_price').val(),
+            pricetype_give: $('#buy_pricetype').val(),
+            address_give: $('#buy_address').val(),
+            password_give: $('#buy_pword').val(),
+            note_give: $('#buy_note').val(),
+            time_now: new Date().getTime()
+          },
+          success: function (response) {
+            alert("구매글 작성 완료!");
+            $('#buyModal').modal('hide');
+            window.location.reload();
+          }
+        })
+
+      }
+      
     }
 
+    $(document).on("click", ".SellArticleOneView", function() {
+      let id = $(this).attr("id");
+      
+      $("#SellDetailModal").modal();
+
+      $.ajax({
+        type: "GET",
+        url: "api/SellOneView",
+        data: {'id':id},
+        success: function (response) {
+          if (response['result'] == 'success') {
+            let article = response['article'];
+            let name = article['name'];
+
+            $('#SellArticleOne_name').html() = article['name'];
+            $('#SellArticleOne_priceNtype').html()=article['price'] + " " + article['pricetype'];
+            $('#SellArticleOne_address').html()=article['address'];
+            $('#SellArticleOne_note').html()=article['note'];
+          } else {
+            alert("서버에서 데이터를 제대로 불러올 수 없습니다!")
+          }
+        }
+      })
+
+      $.ajax({
+        type : "GET",
+        url: "api/search",
+        data: {'name':name},
+        success: function(response) {
+          let villager = response['villager'];
+
+          $('#SellArticleOne_img').attr("src") = "../static/villagers/" + villager['img'];
+        }
+      })
+    });
 
   </script>
   <style type="text/css">
@@ -206,6 +368,12 @@
     .chartjs-size-monitor,
     .chartjs-size-monitor-expand,
     .chartjs-size-monitor-shrink {
+      
+      display : flex;
+      flex-direction : column;
+      justify-content : center;
+      align-items : center; 
+      
       position: absolute;
       direction: ltr;
       left: 0;
@@ -509,16 +677,16 @@
         <div class="modal-body">
           <div id="buy-form">
             <div class="form-group row">
-              <label for="dodoCode" class="col-sm-4 col-form-label">판매 주민</label>
+              <label for="dodoCode" class="col-sm-4 col-form-label" >판매 주민</label>
               <div class="col-sm-8">
-                <img src="https://cdn.turnips.trade/favicon-32x32.png" />
-                <span>너굴?</span>
+                <img src="https://cdn.turnips.trade/favicon-32x32.png" id="SellArticleOne_img" />
+                <span id="SellArticleOne_name">너굴?</span>
               </div>
             </div>
             <div class="form-group row">
-              <label for="fruit" class="col-sm-4 col-form-label">가격</label>
+              <label for="fruit" class="col-sm-4 col-form-label" >가격</label>
               <div class="col-sm-8">
-                <p class="h1" id="recordDetailModalFruit">sample 마일</p>
+                <p class="h1" id="recordDetailModalFruit" id="SellArticleOne_priceNtype">sample 마일</p>
               </div>
             </div>
             <div class="form-group row">
@@ -528,13 +696,13 @@
               </div>
             </div>
             <div class="form-group row">
-              <label for="note" class="col-sm-4 col-form-label">연락처</label>
+              <label for="note" class="col-sm-4 col-form-label" id="SellArticleOne_address">연락처</label>
               <div class="col-sm-8">
                 <p id="recordDetailModalNote"></p>
               </div>
             </div>
             <div class="form-group row">
-              <label for="note" class="col-sm-4 col-form-label">메모</label>
+              <label for="note" class="col-sm-4 col-form-label" id="SellArticleOne_note">메모</label>
               <div class="col-sm-8">
                 <p id="recordDetailModalNote"></p>
               </div>
