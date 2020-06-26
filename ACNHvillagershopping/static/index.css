@@ -15,3 +15,11 @@ body, html {
 
   clip: rect(15px,15px,15px,15px);
 }
+
+.selldetail, .buydetail {
+  padding: 5px 5px;
+}
+
+.pricetypenoti {
+  font-weight: lighter;
+}
