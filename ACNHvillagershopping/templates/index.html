@@ -59,7 +59,6 @@
               <td>${article["name"]}</td>
               <td>${article["price"]}${article["pricetype"]}</td>
               <td><span class="openTimeSpan" data-open-time="${article["time"]}"></span></td>
-              <td>${article["address"]}</td>
               <td><button class="btn btn-primary SellArticleOneView" id="${article["_id"]}">자세히 보기</button></td>
             </tr>
             `;
@@ -86,8 +85,7 @@
                 <td>${article["name"]}</td>
                 <td>${article["price"]}${article["pricetype"]}</td>
                 <td><span class="openTimeSpan" data-open-time="${article["time"]}"></span></td>
-                <td>${article["address"]}</td>
-                <td><button class="btn btn-primary" id="${article["_id"]}">자세히 보기</button></td>
+                <td><button class="btn btn-primary BuyArticleOneView" id="${article["_id"]}">자세히 보기</button></td>
               </tr>
               `;
 
@@ -262,27 +260,27 @@
       }
 
     function BuyArticleNew() {
-      if($('#sell_name').html() == "주민을 검색하세요"){
+      if($('#buy_name').html() == "주민을 검색하세요"){
 
         alert("구매할 주민을 입력하고 검색하기 버튼을 눌러주세요");
         return;
 
-      } else if($('#sell_price').val() == ''){
+      } else if($('#buy_price').val() == ''){
 
         alert("희망가격을 입력해주세요");
         return; 
 
-      } else if($('#sell_pricetype').val() == ''){
+      } else if($('#buy_pricetype').val() == ''){
 
         alert("가격 단위를 정해주세요");
         return; 
 
-      } else if($('#sell_address').val() == ''){
+      } else if($('#buy_address').val() == ''){
 
         alert("연락처를 입력해주세요");
         return;
 
-      } else if($('#sell_pword').val() == ''){
+      } else if($('#buy_pword').val() == ''){
 
         alert("비밀번호를 입력해주세요\n글 삭제 시 필요합니다");
         return;
@@ -327,7 +325,7 @@
             let article = response['article'][0];
             name = article['name'];
 
-            DetailViewimgSearch(name);
+            DetailViewimgSearch_Sell(name);
 
             $('#SellArticleOne_name').html(article['name']);
             $('#SellArticleOne_priceNtype').text(article['price'] + " " + article['pricetype']);
@@ -343,7 +341,39 @@
 
     });
 
-    function DetailViewimgSearch(name){
+    $(document).on("click", ".BuyArticleOneView", function(){
+      let id = $(this).attr("id");
+      let name = "";
+      
+      $("#BuyDetailModal").modal();
+
+      $.ajax({
+        type: "GET",
+        url: "api/BuyOneView",
+        data: {'id':id},
+        success: function(response){
+          if(response['result'] == "success"){
+            let article = response['article'][0];
+            name = article['name'];
+
+            DetailViewimgSearch_Buy(name);
+            console.log(name + " BuyOneView");
+
+            $('#BuyArticleOne_name').html(article['name']);
+            $('#BuyArticleOne_priceNtype').text(article['price'] + " " + article['pricetype']);
+            $('#BuyArticleOne_address').text(article['address']);
+            $('#BuyArticleOne_note').text(article['note']);
+
+          } else {
+            alert("구매글 상세보기에서 서버통신 에러가 발생했습니다");
+          }
+        }
+
+
+      })
+    });
+
+    function DetailViewimgSearch_Sell(name){
       $.ajax({
         type : "GET",
         url: "api/search",
@@ -357,6 +387,24 @@
           $('#SellArticleOne_img').attr("src","../static/villagers/" + img);
           $('#SellArticleOne_img').attr("width",64);
           $('#SellArticleOne_img').attr("height",64);
+        }
+      })
+    }
+
+    function DetailViewimgSearch_Buy(name){
+      $.ajax({
+        type : "GET",
+        url: "api/search",
+        data: {'name_give': name},
+        success: function(response) {
+          let villager = response['villager'];
+          let img = villager['img'];
+          
+          console.log(img + "잘 뽑혔습니다아");
+
+          $('#BuyArticleOne_img').attr("src","../static/villagers/" + img);
+          $('#BuyArticleOne_img').attr("width",64);
+          $('#BuyArticleOne_img').attr("height",64);
         }
       })
     }
@@ -422,7 +470,7 @@
     <div class="col my-3 p-3 bg-white rounded shadow-sm">
       <div class="row">
         <div class="col-md-5 text-center">
-          <img src="https://cdn.turnips.trade/daisymae.png" alt="title-img" class="img-fluid">
+          <img src="../static/acnhvillagershopbanner.jpg" alt="title-img" class="img-fluid">
         </div>
         <div class="col-md-7 text-center">
           <h1 class="display-4">
@@ -447,7 +495,6 @@
             <th scope="col-2">판매주민</th>
             <th scope="col-2">가격</th>
             <th scope="col-2">남은 시간</th>
-            <th scope="col-2">연락처</th>
             <th scope="col-2"></th>
           </tr>
         </thead>
@@ -471,7 +518,6 @@
             <th scope="col-2">희망주민</th>
             <th scope="col-2">가격</th>
             <th scope="col-2">남은 시간</th>
-            <th scope="col-2">연락처</th>
           </tr>
         </thead>
         <tbody id="buy_tablebody">
@@ -751,34 +797,34 @@
         <div class="modal-body">
           <div id="buy-form">
             <div class="form-group row">
-              <label for="dodoCode" class="col-sm-4 col-form-label">판매 주민</label>
+              <label for="dodoCode" class="col-sm-4 col-form-label">희망 주민</label>
               <div class="col-sm-8">
-                <img src="https://cdn.turnips.trade/favicon-32x32.png" />
-                <span>너굴?</span>
+                <img src="https://cdn.turnips.trade/favicon-32x32.png" id="BuyArticleOne_img"/>
+                <span id= "BuyArticleOne_name">너굴?</span>
               </div>
             </div>
             <div class="form-group row">
               <label for="fruit" class="col-sm-4 col-form-label">가격</label>
               <div class="col-sm-8 buydetail">
-                <p id="recordDetailModalFruit">sample 마일</p>
+                <p id="BuyArticleOne_priceNtype">sample 마일</p>
               </div>
             </div>
             <div class="form-group row">
               <label for="nothing" class="col-sm-4 col-form-label"></label>
-              <div class="col-sm-5 buydetail">
+              <div class="col-sm-5 buydetail pricetypenoti">
                 <p>1마일 : 마일 여행권 1장<br />1덩 : 99,000벨</p>
               </div>
             </div>
             <div class="form-group row">
               <label for="note" class="col-sm-4 col-form-label">연락처</label>
               <div class="col-sm-8 buydetail">
-                <p id="recordDetailModalNote"></p>
+                <p id="BuyArticleOne_address"></p>
               </div>
             </div>
             <div class="form-group row">
               <label for="note" class="col-sm-4 col-form-label">메모</label>
               <div class="col-sm-8 buydetail">
-                <p id="recordDetailModalNote"></p>
+                <p id="BuyArticleOne_note"></p>
               </div>
             </div>
             <div>

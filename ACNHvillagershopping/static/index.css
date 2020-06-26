@@ -23,3 +23,11 @@ body, html {
 .pricetypenoti {
   font-weight: lighter;
 }
+
+td {
+  font-size: small;
+}
+
+.SellArticleOneView, .BuyArticleOneView {
+  font-size: small;
+}

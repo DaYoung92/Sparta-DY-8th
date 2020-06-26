@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
 from bson import ObjectId
+import datetime
 
 client = MongoClient('localhost', port= 27017)
 db = client.acnhDB
@@ -26,6 +27,16 @@ def villager_search():
 
 @app.route('/api/sellTableSet', methods=['GET'])
 def sellTableSet():
+
+    new_date = datetime.datetime.now().timestamp() * 1000
+    calday = 24*60*60*1000
+    pre_date = int(new_date - calday)
+
+    print(new_date)
+    print(new_date - calday)
+
+    db.SellArticle.delete_many({'time':{'$lt':pre_date}})
+
     all_sells = list(db.SellArticle.find({},{'password':False, 'note':False}))
     
     results = []
@@ -44,6 +55,12 @@ def sellTableSet():
 
 @app.route('/api/buyTableSet', methods=['GET'])
 def buyTableSet():
+    new_date = datetime.datetime.now().timestamp() * 1000
+    calday = 24*60*60*1000
+    pre_date = int(new_date - calday)
+
+    db.BuyArticle.delete_many({"$or":[{'time':{"$gt":new_date}},{'time':{"$lt":pre_date}}]})
+
     all_buys = list(db.BuyArticle.find({},{'password':False, 'note':False}))
 
     results = []
@@ -115,6 +132,31 @@ def SellArticleOneView():
     # print(o_id)
     all_article = db.SellArticle.find({"_id": o_id},{"password":False})
     
+    article_data = []
+    
+    for article in all_article:
+        object_id = article['_id']
+        # print(object_id)
+        article.update({
+            '_id': str(object_id)
+        })
+        article_data.append(article)
+        
+    print(article_data)
+    
+    return jsonify({
+        'result' : 'success',
+        'article' : article_data
+    })
+
+@app.route('/api/BuyOneView', methods=['GET'])
+def BuyArticleOneView():
+    id_receive = request.args.get('id')
+    
+    o_id = ObjectId(id_receive)
+    # print(o_id)
+    all_article = db.BuyArticle.find({"_id": o_id},{"password":False})
+
     article_data = []
     
     for article in all_article:
